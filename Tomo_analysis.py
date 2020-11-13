@@ -190,8 +190,40 @@ def multiprocess_thickness_calculator(**args):
         #data_thickness.append([data_thickness])#([0:len(Divided_array[i])-5]])
         #data_std_dev.append([data_std])#[0:len(Divided_array[i])-5]])
         #data.append([temp_data])
-        for j in range(len(Divided_array[i])-1):
+        
+        #check if the file is empty
+        # if not write
+        
+        if len(filename_data.readlines()) == 0 or len(filename_data.readlines()) == 1:
+            for j in range(len(Divided_array[i])-1):
             filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
+        # if filled - find slice no that matches with given slice number
+        if len(filename_data.readlines()) != 0 or len(filename_data.readlines()) != 1:
+            lines = file_name_data.readlines()
+            x = [line.split(" ")[0] for line in lines]
+            x= np.array(x,dtype=np.uint16)
+            for j in range(len(Divided_array[i])-1):
+                if (Divided_array[i][j] in x):
+                    pos = x.index(Divided_array)
+                    temp_line = lines[pos]
+                    temp_line = temp_line.replace("\n"," ")
+                    temp_line_split = temp_line.split(" ")
+                    temp_z_value = int(temp_line_split[0])
+                    temp_thickness = int(temp_line_split[1])
+                    temp_std = int(temp_line_split[2])
+                    Divided_array[i][j] = (Divided_array[i][j] + temp_z_value)/2
+                    data_thickness[j] = (data_thickness[j] + temp_thickness)/2
+                    data_std[j] = (data_std[j]+temp_std)/2
+                    
+                    
+                    
+                filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
+            
+           
+        
+        
+       
+    
 
     filename_data.close()
 
@@ -253,6 +285,34 @@ def create_vtk(**args):
             scalar = 
 
 
+            
+def create_split_array(len_of_files,overlap):
+    Divide = len_of_files/200
+    overlap =int(overlap)
+    #print (No_of_images)
+    Nos=np.linspace(0,No_of_images-1,No_of_images)
+    Divided_array = np.array_split(Nos,round(Divide))
+    for i in range(0,len(Divided_array)-2):
+        temp_len = len(Divided_array)
+        Divided_array[i].append(Divided_array[i][temp_len-(overlap+1):temp_len-1])
+                                      
+ return Divided_array
+
+    #take frist 5 lines in array average
+    
+    
+    # write 5 lines
+    
+    
+    # write the remaining
+                             
+ 
+                                
+                                
+        
+    
+    
+    
 
 '''
 def unwrap_3D():
