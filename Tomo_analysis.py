@@ -153,9 +153,12 @@ def multiprocess_thickness_calculator(**args):
         
     if "save_image" in Keys:
         save_image_index = Keys.index("save_image")
+        save_image = "yes"
         if Values[save_image_index] == "yes":
             os.chdir(Values[folder_index])
             os.mkdir("Processed")
+    else:
+        save_image = "No"
         
     
     images = select_images(folder=Values[folder_index],image_type=Values[image_type_index])
@@ -179,14 +182,15 @@ def multiprocess_thickness_calculator(**args):
     data_thickness = []
     data_std_dev = []
     filename_data=open("data_list.txt","a")
-    for i in range(len(Divided_array)):
+    for i in range(0,len(Divided_array)):
         #temp_data = []
         #temp_slices =[]
         #temp_thickness = []
         #temp_std =[]
         print (Divided_array[i])
         start = Divided_array[i][0]
-        end = Divided_array[i][len(Divided_array[i])-1]
+        end = Divided_array[i][len(Divided_array[i])-1]+6
+        #end = Divided_array[i+1][5]
         array = store_as_nd_array(images[int(start):int(end)])
         thickness_image = ps.filters.local_thickness(array)
         thickness_image = np.array(thickness_image, dtype=np.uint16)
@@ -195,12 +199,13 @@ def multiprocess_thickness_calculator(**args):
         for j in range(len(Divided_array[i])-1):
             filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
         '''
-        index_z=np.linspace(start,end,len(thickness_image))
+        index_z=np.linspace(start,end-1,len(thickness_image))
+        print (index_z)
         for j in range(len(index_z)):
             filename_data.write("%i %f %f\n"%(index_z[j],data_thickness[j],data_std[j]))
             
             
-    if Values[save_image_index] == "yes":
+    if save_image == "yes":
        os.chdir(Values[folder_index])
        os.chdir("Processed")
        for jj in range(len(images)):
@@ -219,32 +224,8 @@ def multiprocess_thickness_calculator(**args):
         
         #check if the file is empty
         # if not write
-        '''
-        if len(filename_data.readlines()) == 0 or len(filename_data.readlines()) == 1:
-            for j in range(len(Divided_array[i])-1):
-            filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
-        # if filled - find slice no that matches with given slice number
-        if len(filename_data.readlines()) != 0 or len(filename_data.readlines()) != 1:
-            lines = file_name_data.readlines()
-            x = [line.split(" ")[0] for line in lines]
-            x= np.array(x,dtype=np.uint16)
-            for j in range(len(Divided_array[i])-1):
-                if (Divided_array[i][j] in x):
-                    pos = x.index(Divided_array)
-                    temp_line = lines[pos]
-                    temp_line = temp_line.replace("\n"," ")
-                    temp_line_split = temp_line.split(" ")
-                    temp_z_value = int(temp_line_split[0])
-                    temp_thickness = int(temp_line_split[1])
-                    temp_std = int(temp_line_split[2])
-                    Divided_array[i][j] = (Divided_array[i][j] + temp_z_value)/2
-                    data_thickness[j] = (data_thickness[j] + temp_thickness)/2
-                    data_std[j] = (data_std[j]+temp_std)/2
-                    
-                    
-                    
-                filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
-         ''''           
+        
+            
      
 
     filename_data.close()
@@ -304,21 +285,41 @@ def create_vtk(**args):
             coordinate_z = z_value
             coordinate_x = int(coordinate[0][1])  #change in coordinate
             coordinate_y = int(coordinate[0][0]) 
-            scalar = 
+            #scalar = 
 
 
             
 def create_split_array(len_of_files,overlap):
     Divide = len_of_files/200
     overlap =int(overlap)
-    #print (No_of_images)
-    Nos=np.linspace(0,No_of_images-1,No_of_images)
+    Nos=np.linspace(0,len_of_files-1,len_of_files)
+    
     Divided_array = np.array_split(Nos,round(Divide))
-    for i in range(0,len(Divided_array)-2):
-        temp_len = len(Divided_array)
-        Divided_array[i].append(Divided_array[i][temp_len-(overlap+1):temp_len-1])
+
+    '''
+    print (type(Divided_array[0]))
+    
+    
+
+    for i in range(0,len(Divided_array)-1):
+        temp_len = len(Divided_array[i])
+        
+        
+        start = 0
+        end = overlap
+        list_temp = Divided_array[i+1][start:end]
+        print(list_temp)
+        for ii in range(len(list_temp)):
+            
+            np.append(Divided_array[i],list_temp[ii])
+            print (len(Divided_array[i]))
+            
+    print (Divided_array)
+    '''
                                       
- return Divided_array
+    return Divided_array
+
+
 
 def sort_sequence():
     with open('data_list.txt') as f:
@@ -327,48 +328,49 @@ def sort_sequence():
          z_value = [line.split(" ")[0] for line in lines]
          thickness = [line.split(" ")[1] for line in lines]
          std = [line.split(" ")[2].replace("\n"," ") for line in lines]
-         unique, frequency = np.unique(z_value, return_counts = True) 
+         z_value = np.array(z_value,dtype=np.uint16)
+         thickness = np.array(thickness,dtype=np.float32)
+         std = np.array(std,dtype=np.float32)
+         unique, frequency = np.unique(z_value, return_counts = True)
+         
+         
     Repeat_number =[]
+    
     for i in range(len(frequency)):
-        if frequency[i] ==2:
+        if frequency[i] == 2:
             Repeat_number.append(unique[i])
+            
+            
     for i in range(len(Repeat_number)):
         coordinates = []
         for j in range(len(z_value)):
-            if z_value == Repeat_number[i]:
+            if z_value[j] == Repeat_number[i]:
                coordinates.append(j)
         temp_z_value = []
         temp_thickness =[]
         temp_std = []
         for k in range(len(coordinates)):
-            temp_z_value.appen(z_value[coordinates[k]])
-            temp_thickness.appen(thickness[coordinates[k]])
-            temp_std.appen(std[coordinates[k]])
+            temp_z_value.append(z_value[coordinates[k]])
+            
+            temp_thickness.append(thickness[coordinates[k]])
+            temp_std.append(std[coordinates[k]])
+
+        z_value = list(z_value)
+        thickness = list(thickness)
+        std = list(std)
+        
         z_value[min(coordinates)] = np.average(temp_z_value)
         thickness[min(coordinates)] = np.average(temp_thickness)
         std[min(coordinates)] = np.average(temp_std)
+
         del(z_value[max(coordinates)])
         del(thickness[max(coordinates)])
         del(std[max(coordinates)])
-    os.remove("data_list.txt")     
-    filename_data=open("data_list.txt","a")
+    #os.remove("data_list.txt")     
+    filename_data=open("data_list_sorted.txt","a")
     for i in range(len(z_value)):
         filename_data.write("%i %f %f\n"%(z_value[i],thickness[i],std[i]))
-        filename_data.close()
-        
-      
-        
-            
-                
-            
-            
-    
-            
-          
-    
-                             
- 
-                                
+    filename_data.close()
                                 
         
     
@@ -392,8 +394,9 @@ plt.plot(coordinate,data_thickness)
 plt.show()
 '''
 data = multiprocess_thickness_calculator(folder="H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/",image_type="tiff",resolution="18")
-
-plot_thickness_data("H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/")
+os.chdir("H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/")
+sort_sequence()
+#plot_thickness_data("H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/")
     
 
     
