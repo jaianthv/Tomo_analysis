@@ -191,9 +191,13 @@ def multiprocess_thickness_calculator(**args):
         thickness_image = ps.filters.local_thickness(array)
         thickness_image = np.array(thickness_image, dtype=np.uint16)
         coordinate,data_thickness,data_std = get_thickness(thickness_image,int(Values[resolution_index]))
-        
+        '''
         for j in range(len(Divided_array[i])-1):
             filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
+        '''
+        index_z=np.linspace(start,end,thickness_image)
+        for j in range(len(index_z)):
+            filename_data.write("%i %f %f\n"%(index_z[j],data_thickness[j],data_std[j]))
             
             
     if Values[save_image_index] == "yes":
