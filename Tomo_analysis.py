@@ -320,13 +320,52 @@ def create_split_array(len_of_files,overlap):
                                       
  return Divided_array
 
-    #take frist 5 lines in array average
+def sort_sequence(file_name):
+    with open('data_list.txt') as f:
+         lines = f.readlines()
+         
+         z_value = [line.split(" ")[0] for line in lines]
+         thickness = [line.split(" ")[1] for line in lines]
+         std = [line.split(" ")[2].replace("\n"," ") for line in lines]
+         unique, frequency = np.unique(z_value, return_counts = True) 
+    Repeat_number =[]
+    for i in range(len(frequency)):
+        if frequency[i] ==2:
+            Repeat_number.append(unique[i])
+    for i in range(len(Repeat_number)):
+        coordinates = []
+        for j in range(len(z_value)):
+            if z_value == Repeat_number[i]:
+               coordinates.append(j)
+        temp_z_value = []
+        temp_thickness =[]
+        temp_std = []
+        for k in range(len(coordinates)):
+            temp_z_value.appen(z_value[coordinates[k]])
+            temp_thickness.appen(thickness[coordinates[k]])
+            temp_std.appen(std[coordinates[k]])
+        z_value[min(coordinates)] = np.average(temp_z_value)
+        thickness[min(coordinates)] = np.average(temp_thickness)
+        std[min(coordinates)] = np.average(temp_std)
+        del(z_value[max(coordinates)])
+        del(thickness[max(coordinates)])
+        del(std[max(coordinates)])
+        
+        filename_data=open("data_list_sorted.txt","a")
+        for i in range(len(z_value)):
+            filename_data.write("%i %f %f\n"%(z_value[i],thickness[i],std[i]))
+        filename_data.close()
+        
+      
+        
+            
+                
+            
+            
     
+            
+          
     
-    # write 5 lines
-    
-    
-    # write the remaining
                              
  
                                 
