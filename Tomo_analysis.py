@@ -150,17 +150,27 @@ def multiprocess_thickness_calculator(**args):
         resolution_index = Keys.index("resolution")
     else:
         print ("resolution argument missing")
+        
+    if "save_image" in Keys:
+        save_image_index = Keys.index("save_image")
+        if Values[save_image_index] == "yes":
+            os.chdir(Values[folder_index])
+            os.mkdir("Processed")
+        
     
     images = select_images(folder=Values[folder_index],image_type=Values[image_type_index])
     # indices of images into set of 200 slices
     No_of_images = len(images)
+    
+    Divided_array = create_split_array(No_of_images,5)
+    
+    '''
     Divide = No_of_images/200
     #print (No_of_images)
     Nos=np.linspace(0,No_of_images-1,No_of_images)
-    
     Divided_array = np.array_split(Nos,round(Divide))
-   
-    print (Divided_array)
+    '''
+    #print (Divided_array)
     '''
     for ii in range(len(Divided_array)-2):
         Divided_array[ii]=np.append(Divided_array[ii],Divided_array[ii+1][0:4])
@@ -181,6 +191,18 @@ def multiprocess_thickness_calculator(**args):
         thickness_image = ps.filters.local_thickness(array)
         thickness_image = np.array(thickness_image, dtype=np.uint16)
         coordinate,data_thickness,data_std = get_thickness(thickness_image,int(Values[resolution_index]))
+        
+        for j in range(len(Divided_array[i])-1):
+            filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
+            
+            
+    if Values[save_image_index] == "yes":
+       os.chdir(Values[folder_index])
+       os.chdir("Processed")
+       for jj in range(len(images)):
+        
+           cv.imwrite("Processed"+images[jj]+"f", thickess_image[jj])
+        
         #temp_data = np.concatenate((Divided_array[i][0:len(Divided_array[i])-5],data_thickness[0:len(Divided_array[i])-5],data_std[0:len(Divided_array[i])-5]),axis=0)
         #Divided_array[i] = np.array(Divided_array[i])
         #data_slices.append(Divided_array[i])#[0:len(Divided_array[i])-5]])
@@ -193,7 +215,7 @@ def multiprocess_thickness_calculator(**args):
         
         #check if the file is empty
         # if not write
-        
+        '''
         if len(filename_data.readlines()) == 0 or len(filename_data.readlines()) == 1:
             for j in range(len(Divided_array[i])-1):
             filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
@@ -218,12 +240,8 @@ def multiprocess_thickness_calculator(**args):
                     
                     
                 filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
-            
-           
-        
-        
-       
-    
+         ''''           
+     
 
     filename_data.close()
 
