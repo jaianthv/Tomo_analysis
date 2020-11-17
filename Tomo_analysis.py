@@ -320,7 +320,7 @@ def create_split_array(len_of_files,overlap):
                                       
  return Divided_array
 
-def sort_sequence(file_name):
+def sort_sequence():
     with open('data_list.txt') as f:
          lines = f.readlines()
          
