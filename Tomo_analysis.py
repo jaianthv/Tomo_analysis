@@ -350,10 +350,10 @@ def sort_sequence(file_name):
         del(z_value[max(coordinates)])
         del(thickness[max(coordinates)])
         del(std[max(coordinates)])
-        
-        filename_data=open("data_list_sorted.txt","a")
-        for i in range(len(z_value)):
-            filename_data.write("%i %f %f\n"%(z_value[i],thickness[i],std[i]))
+    os.remove("data_list.txt")     
+    filename_data=open("data_list.txt","a")
+    for i in range(len(z_value)):
+        filename_data.write("%i %f %f\n"%(z_value[i],thickness[i],std[i]))
         filename_data.close()
         
       
@@ -392,6 +392,7 @@ plt.plot(coordinate,data_thickness)
 plt.show()
 '''
 data = multiprocess_thickness_calculator(folder="H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/",image_type="tiff",resolution="18")
+
 plot_thickness_data("H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/")
     
 
