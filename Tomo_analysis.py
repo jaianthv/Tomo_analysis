@@ -195,7 +195,7 @@ def multiprocess_thickness_calculator(**args):
         for j in range(len(Divided_array[i])-1):
             filename_data.write("%i %f %f\n"%(Divided_array[i][j],data_thickness[j],data_std[j]))
         '''
-        index_z=np.linspace(start,end,thickness_image)
+        index_z=np.linspace(start,end,len(thickness_image))
         for j in range(len(index_z)):
             filename_data.write("%i %f %f\n"%(index_z[j],data_thickness[j],data_std[j]))
             
