@@ -156,7 +156,7 @@ def multiprocess_thickness_calculator(**args):
         save_image = "yes"
         if Values[save_image_index] == "yes":
             os.chdir(Values[folder_index])
-            os.mkdir("Processed")
+            os.mkdir("Processed_thickness")
     else:
         save_image = "No"
         
@@ -189,11 +189,12 @@ def multiprocess_thickness_calculator(**args):
         #temp_std =[]
         print (Divided_array[i])
         start = Divided_array[i][0]
-        if i == len(Divided_array):
-            end = Divided_array[i][len(Divided_array[i])-1]
+        if i == len(Divided_array)-1:
+            end = Divided_array[i][len(Divided_array[i])-1]+1
         
         else:
-           end = Divided_array[i][len(Divided_array[i])-1]+6
+            end = Divided_array[i][len(Divided_array[i])-1]+6
+        #end = Divided_array[i][len(Divided_array[i])-1]+6
         #end = Divided_array[i+1][5]
         array = store_as_nd_array(images[int(start):int(end)])
         thickness_image = ps.filters.local_thickness(array)
@@ -209,12 +210,13 @@ def multiprocess_thickness_calculator(**args):
             filename_data.write("%i %f %f\n"%(index_z[j],data_thickness[j],data_std[j]))
             
             
-    if save_image == "yes":
-       os.chdir(Values[folder_index])
-       os.chdir("Processed")
-       for jj in range(len(images)):
-        
-           cv.imwrite("Processed"+images[jj]+"f", thickess_image[jj])
+        if save_image == "yes":
+           os.chdir(Values[folder_index])
+           os.chdir("Processed_thickness")
+        for jj in range(len(thickness_image)):
+            
+            temp_split = images[int(index_z[jj])].split("/")
+            cv.imwrite("Processed_"+temp_split[len(temp_split)-1],thickness_image[jj])
         
         #temp_data = np.concatenate((Divided_array[i][0:len(Divided_array[i])-5],data_thickness[0:len(Divided_array[i])-5],data_std[0:len(Divided_array[i])-5]),axis=0)
         #Divided_array[i] = np.array(Divided_array[i])
@@ -397,7 +399,7 @@ coordinate,data_thickness = get_thickness(thickness_image)
 plt.plot(coordinate,data_thickness)
 plt.show()
 '''
-data = multiprocess_thickness_calculator(folder="H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/",image_type="tiff",resolution="18")
+data = multiprocess_thickness_calculator(folder="H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/",image_type="tiff",resolution="18", save_image="yes")
 os.chdir("H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/")
 sort_sequence()
 #plot_thickness_data("H:/Batch_1_07_2020/EEG002_X overview/reconstructed/Processed/")
