@@ -189,7 +189,11 @@ def multiprocess_thickness_calculator(**args):
         #temp_std =[]
         print (Divided_array[i])
         start = Divided_array[i][0]
-        end = Divided_array[i][len(Divided_array[i])-1]+6
+        if i == len(Divided_array):
+            end = Divided_array[i][len(Divided_array[i])-1]
+        
+        else:
+           end = Divided_array[i][len(Divided_array[i])-1]+6
         #end = Divided_array[i+1][5]
         array = store_as_nd_array(images[int(start):int(end)])
         thickness_image = ps.filters.local_thickness(array)
