@@ -384,7 +384,20 @@ def sort_sequence():
     
 
 '''
-def unwrap_3D():
+def unwrap_3D(slice_image):
+    list = cv.findNonZero(slice_image)
+    array_1 = []
+
+    
+
+def sort_data(list):
+
+    Outermost = sqrt(x2+y2)
+    
+    first quadrant
+    
+    
+
 
 
 def roughness_outer():
