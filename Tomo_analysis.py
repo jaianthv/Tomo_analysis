@@ -392,6 +392,12 @@ def unwrap_3D(slice_image):
 
 def sort_data(list):
 
+    step one -  find the center of mass, x max and y max
+    step two -  sort 
+    
+    
+    step 
+    
     Outermost = sqrt(x2+y2)
     
     first quadrant
