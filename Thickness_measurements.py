@@ -9,7 +9,29 @@ from skimage.transform import downscale_local_mean as bb
 #Test with one image
 
 
-
+class unwrap:
+    def __init__(self,folder_name)
+        self.folder_name = folder_name
+        
+    def openimage2array(self,filename):
+        self.image = cv.imread(filename,-1)
+        self.image_array = np.array(self.image,dtype=np.float32)
+        return self.image_array
+    
+    def find_edges(self,input_array):
+        
+        
+        
+    def find_center_of_mass(self,input_array):
+        self.image = input_array
+        
+        
+        
+    
+    
+        
+        
+ 
 
 
 def openimage(image):
